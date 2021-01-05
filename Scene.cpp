@@ -17,8 +17,9 @@ Scene::Scene(int NumCircles, bool SameRadius) {
     FrameCount = 0;
 }
 
-void Scene::AddCircle(GLfloat x, GLfloat y, GLfloat vx, GLfloat vy, GLfloat r, glm::vec3 c) {
-    VC.push_back(Circle(x, y, vx, vy, r, c));
+void Scene::AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz, 
+        GLfloat r, glm::vec3 c) {
+    VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));
 }
 
 void Scene::AddCircle(Circle c) {
@@ -26,14 +27,18 @@ void Scene::AddCircle(Circle c) {
 }
 
 void Scene::AddRandomCircle() {
-    GLfloat x, y, vx, vy, r;
+    GLfloat x, y, z, vx, vy, vz, r;
     vx = distribution(generator);
     vy = distribution(generator);
+    vz = distribution(generator);
     r = distribution2(generator);
+
     x = -1.f + r * Circle::BaseRadius;
     y = -1.f + r * Circle::BaseRadius;
+    z = 1.f + r * Circle::BaseRadius;
+    
     glm::vec3 c(distribution3(generator), distribution3(generator), distribution3(generator));
-    VC.push_back(Circle(x, y, vx, vy, r, c));
+    VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));
 }
 
 void Scene::RenderScene(GLint ShaderId) const {
@@ -52,11 +57,11 @@ bool Scene::CheckCollision(const Circle &c1, const Circle &c2) const {
 }
 
 void Scene::ResolveCollision(Circle &c1, Circle &c2) {
-    glm::vec2 normal = c1.GetCoordinates() - c2.GetCoordinates();
-    glm::vec2 v_normal = c1.GetVelocity() - c2.GetVelocity();
+    glm::vec3 normal = c1.GetCoordinates() - c2.GetCoordinates();
+    glm::vec3 v_normal = c1.GetVelocity() - c2.GetVelocity();
     
     float resistance = 4e-1f;
-    glm::vec2 diff = (1 - resistance) * glm::dot(v_normal, normal) / glm::dot(normal, normal) * normal;
+    glm::vec3 diff = (1 - resistance) * glm::dot(v_normal, normal) / glm::dot(normal, normal) * normal;
     
     c1.ChangeDirection(diff, normal);
     c2.ChangeDirection(-diff, -normal);

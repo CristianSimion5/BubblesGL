@@ -42,5 +42,6 @@
   <ItemGroup>
     <None Include="Shader.frag" />
     <None Include="Shader.vert" />
+    <None Include="README.md" />
   </ItemGroup>
 </Project>

@@ -24,7 +24,8 @@ private:
 public:
     Scene(int NumCircles, bool SameRadius = false);
 
-    void AddCircle(GLfloat x, GLfloat y, GLfloat vx, GLfloat vy, GLfloat r, glm::vec3 c);
+    void AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz, 
+        GLfloat r, glm::vec3 c);
     void AddCircle(Circle c);
     void AddRandomCircle();
 

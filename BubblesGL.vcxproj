@@ -154,6 +154,7 @@
     <ClInclude Include="Scene.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
     <None Include="Shader.frag" />
     <None Include="Shader.vert" />
   </ItemGroup>

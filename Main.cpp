@@ -94,7 +94,11 @@ int main(int argc, char* argv[]) {
     glewInit();
 
     Initialize();
-    
+    /*for (int i = 0; i < Circle::indices.size(); i += 3) {
+        std::cout << Circle::indices[i] << ' ' << Circle::indices[i + 1] << ' '
+            << Circle::indices[2] << '\n';
+    }*/
+
     glutDisplayFunc(RenderFunction);
     glutCloseFunc(Cleanup);
     glutMainLoop();
