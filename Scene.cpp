@@ -35,7 +35,7 @@ void Scene::AddRandomCircle() {
 
     x = -1.f + r * Circle::BaseRadius;
     y = -1.f + r * Circle::BaseRadius;
-    z = 1.f + r * Circle::BaseRadius;
+    z = -1.f + r * Circle::BaseRadius;
     
     glm::vec3 c(distribution3(generator), distribution3(generator), distribution3(generator));
     VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));

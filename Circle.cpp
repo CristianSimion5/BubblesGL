@@ -11,8 +11,8 @@ GLuint Circle::EboId;
 std::vector<GLuint> Circle::indices;
 
 GLfloat Circle::BaseRadius = 0.2f;
-GLint Circle::parallelCount = 50;
-GLint Circle::meridianCount = 50;
+GLint Circle::parallelCount = 20;
+GLint Circle::meridianCount = 20;
 
 std::random_device Circle::rs;
 std::default_random_engine Circle::generator(rs());
@@ -136,19 +136,24 @@ glm::vec3 Circle::GetVelocity() const { return Velocity; }
 void Circle::RenderCircle(GLuint ShaderId) const {
     glUseProgram(ShaderId);
 
-    GLint mScaleLoc = glGetUniformLocation(ShaderId, "mScale");
-    GLint mTranslLoc = glGetUniformLocation(ShaderId, "mTranslate");
+    glm::mat4 mModel = MatrPos * MatrScale;
+    GLint mModelLoc = glGetUniformLocation(ShaderId, "mModel");
+    glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);
 
-    glUniformMatrix4fv(mScaleLoc, 1, GL_FALSE, &MatrScale[0][0]);
-    glUniformMatrix4fv(mTranslLoc, 1, GL_FALSE, &MatrPos[0][0]);
+    glm::mat4 mView = glm::lookAt(
+        glm::vec3(2.f, 2.f, 2.f),
+        glm::vec3(0.f, 0.f, 0.f),
+        glm::vec3(0.f, 1.f, 0.f));
+    GLint mViewLoc = glGetUniformLocation(ShaderId, "mView");
+    glUniformMatrix4fv(mViewLoc, 1, GL_FALSE, &mView[0][0]);
 
-    GLint uWidthLoc = glGetUniformLocation(ShaderId, "uWidth");
-    GLint uHeightLoc = glGetUniformLocation(ShaderId, "uHeight");
+    glm::mat4 mProjection = glm::perspective(glm::radians(45.f), 1.f, 0.1f, 100.f);
+    GLint mProjectionLoc = glGetUniformLocation(ShaderId, "mProjection");
+    glUniformMatrix4fv(mProjectionLoc, 1, GL_FALSE, &mProjection[0][0]);
+
     GLint uRadiusLoc = glGetUniformLocation(ShaderId, "radius");
     GLint uColorLoc = glGetUniformLocation(ShaderId, "uColor");
 
-    glUniform1f(uWidthLoc, (float) glutGet(GLUT_WINDOW_WIDTH));
-    glUniform1f(uHeightLoc, (float) glutGet(GLUT_WINDOW_HEIGHT));
     glUniform1f(uRadiusLoc, Radius);
     glUniform3fv(uColorLoc, 1, &Color[0]);
        
@@ -184,11 +189,22 @@ void Circle::Update(bool ChangeForce) {
         else
             MatrPos[3].y -= upy - 1.0f;
     }
+
+    GLfloat farz = MatrPos[3].z - Radius;
+    GLfloat nearz = MatrPos[3].z + Radius;
+
+    if (farz < -1.0f || nearz > 1.0f) {
+        Velocity.z *= -1.0f;
+        if (farz < -1.0f)
+            MatrPos[3].z += -1.0f - farz;
+        else
+            MatrPos[3].z -= nearz - 1.0f;
+    }
 }
 
 void Circle::ChangeDirection(glm::vec3 diff, glm::vec3 normal) {
     Velocity = Velocity - diff;
-    MatrPos[3].x += normal.x * 0.005f;
-    MatrPos[3].y += normal.y * 0.005f;
-    MatrPos[3].z += normal.z * 0.005f;
+    MatrPos[3].x += normal.x * 0.0005f;
+    MatrPos[3].y += normal.y * 0.0005f;
+    MatrPos[3].z += normal.z * 0.0005f;
 }
