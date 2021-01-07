@@ -14,6 +14,7 @@ private:
     std::uniform_real_distribution<float> distribution3;
     
     const glm::vec3 OutlineColor = glm::vec3(1.f, 0.f, 0.f);
+    glm::vec3 CameraPosition;
 
     GLuint VaoId, VboId;
     GLfloat XBounds[2] = { -1.f, 1.f }, YBounds[2] = { -1.f, 1.f }, ZBounds[2] = { -1.f, 1.f };
@@ -25,6 +26,7 @@ private:
     GLfloat GetDistance(const Circle &c1, const Circle &c2) const;
     bool CheckCollision(const Circle &c1, const Circle &c2) const;
     void ResolveCollision(Circle &c1, Circle &c2);
+    void SortByDepth();
 
 public:
     Scene(int NumCircles, bool SameRadius = false);

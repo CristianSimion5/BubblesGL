@@ -30,7 +30,7 @@ typedef std::chrono::steady_clock timer;
 GLuint ProgramId;
 
 // Initializeaza scena cu un numar dat de cercuri
-Scene scene(20, true);
+Scene scene(20);
 
 void CreateShaders(void) {
     ProgramId = LoadShaders("Shader.vert", "Shader.frag");

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -17,6 +18,8 @@ Scene::Scene(int NumCircles, bool SameRadius) {
     AddRandomCircle();
     WaitingCircles = NumCircles - 1;
     FrameCount = 0;
+
+    CameraPosition = glm::vec3(3.f, 2.3f, 1.5f);
 }
 
 void Scene::CreateVertexBuffers()
@@ -103,7 +106,7 @@ void Scene::RenderScene(GLint ShaderId) const {
     glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);
 
     glm::mat4 mView = glm::lookAt(
-        glm::vec3(3.f, 2.3f, 1.5f),
+        CameraPosition,
         glm::vec3(0.f, 0.f, 0.f),
         glm::vec3(0.f, 1.f, 0.f));
     GLint mViewLoc = glGetUniformLocation(ShaderId, "mView");
@@ -147,6 +150,13 @@ void Scene::ResolveCollision(Circle &c1, Circle &c2) {
     c2.ChangeDirection(-diff, -normal);
 }
 
+void Scene::SortByDepth() {
+    std::sort(VC.begin(), VC.end(), [this](const Circle& c1, const Circle& c2) {
+        return (glm::distance(c1.GetCoordinates(), CameraPosition) + c1.GetRadius() >
+                glm::distance(c2.GetCoordinates(), CameraPosition) + c2.GetRadius());
+        });
+}
+
 void Scene::CheckCollisions() {
     std::vector <bool> HasCollisioned(VC.size(), false);
     for (int i = 0; i < VC.size(); i++) {
@@ -175,4 +185,5 @@ void Scene::Update() {
         AddRandomCircle();
         WaitingCircles--;
     }
+    SortByDepth();
 }

@@ -10,6 +10,6 @@ uniform float radius;
 uniform vec3 uColor;
 
 void main(void) {
-    out_Color = vec4(uColor, 0.3f);
+    out_Color = vec4(uColor, 0.6f);
 }
  
