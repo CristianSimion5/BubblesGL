@@ -14,7 +14,7 @@ private:
     std::uniform_real_distribution<float> distribution3;
     
     const glm::vec3 OutlineColor = glm::vec3(1.f, 0.f, 0.f);
-    glm::vec3 CameraPosition;
+    glm::vec3 CameraPosition, LightPosition, LightColor;
 
     GLuint VaoId, VboId;
     GLfloat XBounds[2] = { -1.f, 1.f }, YBounds[2] = { -1.f, 1.f }, ZBounds[2] = { -1.f, 1.f };

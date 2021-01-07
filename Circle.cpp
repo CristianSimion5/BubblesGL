@@ -10,7 +10,7 @@ GLuint Circle::VboNormId;
 GLuint Circle::EboId;
 std::vector<GLuint> Circle::indices;
 
-GLfloat Circle::BaseRadius = 0.2f;
+GLfloat Circle::BaseRadius = 0.3f;
 GLint Circle::parallelCount = 50;
 GLint Circle::meridianCount = 50;
 

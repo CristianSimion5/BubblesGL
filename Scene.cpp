@@ -20,6 +20,8 @@ Scene::Scene(int NumCircles, bool SameRadius) {
     FrameCount = 0;
 
     CameraPosition = glm::vec3(3.f, 2.3f, 1.5f);
+    LightPosition = glm::vec3(5.f, 5.f, 5.f);
+    LightColor = glm::vec3(1.f, 1.f, 1.f);
 }
 
 void Scene::CreateVertexBuffers()
@@ -101,6 +103,15 @@ void Scene::RenderScene(GLint ShaderId) const {
     glUseProgram(ShaderId);
     glBindVertexArray(VaoId);
 
+    GLuint lColLocation = glGetUniformLocation(ShaderId, "lightColor");
+    glUniform3fv(lColLocation, 1, &LightColor[0]);
+
+    GLuint lPosLocation = glGetUniformLocation(ShaderId, "lightPos");
+    glUniform3fv(lPosLocation, 1, &LightPosition[0]);
+
+    GLuint cPosLocation = glGetUniformLocation(ShaderId, "cameraPos");
+    glUniform3fv(cPosLocation, 1, &CameraPosition[0]);
+
     glm::mat4 mModel = glm::mat4(1.f);
     GLint mModelLoc = glGetUniformLocation(ShaderId, "mModel");
     glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);
@@ -131,7 +142,7 @@ void Scene::RenderScene(GLint ShaderId) const {
 }
 
 GLfloat Scene::GetDistance(const Circle &c1, const Circle &c2) const {
-    glm::vec2 diff = c1.GetCoordinates() - c2.GetCoordinates();
+    glm::vec3 diff = c1.GetCoordinates() - c2.GetCoordinates();
     return glm::sqrt(glm::dot(diff, diff));
 }
 
