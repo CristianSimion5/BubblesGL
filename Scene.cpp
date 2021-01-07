@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 Scene::Scene(int NumCircles, bool SameRadius) {
     generator = std::default_random_engine(rs());
     distribution = std::uniform_real_distribution<float>(0.001f, 0.01f);
@@ -17,7 +19,58 @@ Scene::Scene(int NumCircles, bool SameRadius) {
     FrameCount = 0;
 }
 
-void Scene::AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz, 
+void Scene::CreateVertexBuffers()
+{
+    GLfloat BoxOutline[] = {
+        XBounds[0], YBounds[0], ZBounds[0],
+        XBounds[0], YBounds[0], ZBounds[1],
+
+        XBounds[0], YBounds[0], ZBounds[1],
+        XBounds[1], YBounds[0], ZBounds[1],
+        
+        XBounds[1], YBounds[0], ZBounds[1],
+        XBounds[1], YBounds[0], ZBounds[0],
+
+        XBounds[1], YBounds[0], ZBounds[0],
+        XBounds[0], YBounds[0], ZBounds[0],
+
+        XBounds[0], YBounds[1], ZBounds[0],
+        XBounds[0], YBounds[1], ZBounds[1],
+        
+        XBounds[0], YBounds[1], ZBounds[1],
+        XBounds[1], YBounds[1], ZBounds[1],
+        
+        XBounds[1], YBounds[1], ZBounds[1],
+        XBounds[1], YBounds[1], ZBounds[0],
+        
+        XBounds[1], YBounds[1], ZBounds[0],
+        XBounds[0], YBounds[1], ZBounds[0],
+
+        XBounds[0], YBounds[0], ZBounds[0],
+        XBounds[0], YBounds[1], ZBounds[0],
+
+        XBounds[0], YBounds[0], ZBounds[1],
+        XBounds[0], YBounds[1], ZBounds[1],
+
+        XBounds[1], YBounds[0], ZBounds[1],
+        XBounds[1], YBounds[1], ZBounds[1],
+
+        XBounds[1], YBounds[0], ZBounds[0],
+        XBounds[1], YBounds[1], ZBounds[0]
+    };
+
+    glGenVertexArrays(1, &VaoId);
+    glBindVertexArray(VaoId);
+
+    glGenBuffers(1, &VboId);
+    glBindBuffer(GL_ARRAY_BUFFER, VboId);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(BoxOutline), &BoxOutline[0], GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+}
+
+void Scene::AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
         GLfloat r, glm::vec3 c) {
     VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));
 }
@@ -42,9 +95,36 @@ void Scene::AddRandomCircle() {
 }
 
 void Scene::RenderScene(GLint ShaderId) const {
+    glUseProgram(ShaderId);
+    glBindVertexArray(VaoId);
+
+    glm::mat4 mModel = glm::mat4(1.f);
+    GLint mModelLoc = glGetUniformLocation(ShaderId, "mModel");
+    glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);
+
+    glm::mat4 mView = glm::lookAt(
+        glm::vec3(3.f, 2.3f, 1.5f),
+        glm::vec3(0.f, 0.f, 0.f),
+        glm::vec3(0.f, 1.f, 0.f));
+    GLint mViewLoc = glGetUniformLocation(ShaderId, "mView");
+    glUniformMatrix4fv(mViewLoc, 1, GL_FALSE, &mView[0][0]);
+
+    glm::mat4 mProjection = glm::perspective(glm::radians(45.f), 1.f, 1.f, 10.f);
+    GLint mProjectionLoc = glGetUniformLocation(ShaderId, "mProjection");
+    glUniformMatrix4fv(mProjectionLoc, 1, GL_FALSE, &mProjection[0][0]);
+
+    GLint uColorLoc = glGetUniformLocation(ShaderId, "uColor");
+    glUniform3f(uColorLoc, 0.f, 0.f, 0.f);
+    
+    glLineWidth(2.f);
+    glDrawArrays(GL_LINES, 0, 24);
+
+    glDepthMask(GL_FALSE);
+    glBindVertexArray(Circle::VaoId);
     for (const Circle& circle : VC) {
         circle.RenderCircle(ShaderId);
     }
+    
 }
 
 GLfloat Scene::GetDistance(const Circle &c1, const Circle &c2) const {

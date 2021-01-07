@@ -51,6 +51,13 @@ void Initialize(void) {
 
     // Creeaza VBO-urile si VAO-urile necesare pentru desenare
     Circle::InitVertex();
+    scene.CreateVertexBuffers();
+
+    // Activeaza testarea in adancime
+    glEnable(GL_DEPTH_TEST);
+    
+    // Activeaza multisample anti-aliasing
+    glEnable(GL_MULTISAMPLE);
 
     // Activeaza transparenta obiectelor
     glEnable(GL_BLEND);
@@ -60,8 +67,8 @@ void Initialize(void) {
 void RenderFunction(void) {
     // Punctul de timp pentru inceputul desenarii
     timer::time_point t1 = timer::now();
-
-    glClear(GL_COLOR_BUFFER_BIT);
+    glDepthMask(GL_TRUE);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     scene.RenderScene(ProgramId);
     scene.Update();
@@ -87,7 +94,7 @@ void Cleanup(void) {
 #include <iostream>
 int main(int argc, char* argv[]) {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(1000, 1000);
     glutCreateWindow("Bubbles in OpenGL");

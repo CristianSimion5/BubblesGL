@@ -11,8 +11,8 @@ GLuint Circle::EboId;
 std::vector<GLuint> Circle::indices;
 
 GLfloat Circle::BaseRadius = 0.2f;
-GLint Circle::parallelCount = 20;
-GLint Circle::meridianCount = 20;
+GLint Circle::parallelCount = 50;
+GLint Circle::meridianCount = 50;
 
 std::random_device Circle::rs;
 std::default_random_engine Circle::generator(rs());
@@ -139,17 +139,6 @@ void Circle::RenderCircle(GLuint ShaderId) const {
     glm::mat4 mModel = MatrPos * MatrScale;
     GLint mModelLoc = glGetUniformLocation(ShaderId, "mModel");
     glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);
-
-    glm::mat4 mView = glm::lookAt(
-        glm::vec3(2.f, 2.f, 2.f),
-        glm::vec3(0.f, 0.f, 0.f),
-        glm::vec3(0.f, 1.f, 0.f));
-    GLint mViewLoc = glGetUniformLocation(ShaderId, "mView");
-    glUniformMatrix4fv(mViewLoc, 1, GL_FALSE, &mView[0][0]);
-
-    glm::mat4 mProjection = glm::perspective(glm::radians(45.f), 1.f, 0.1f, 100.f);
-    GLint mProjectionLoc = glGetUniformLocation(ShaderId, "mProjection");
-    glUniformMatrix4fv(mProjectionLoc, 1, GL_FALSE, &mProjection[0][0]);
 
     GLint uRadiusLoc = glGetUniformLocation(ShaderId, "radius");
     GLint uColorLoc = glGetUniformLocation(ShaderId, "uColor");
