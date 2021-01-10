@@ -4,9 +4,9 @@
 
 class TrackCamera {
 private:
-    const glm::vec3 up = glm::vec3(0.f, 1.f, 0.f), forward = glm::vec3(0.f, 0.f, -1.f);
+    glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
 
-    glm::vec3 CameraPosition = glm::vec3(3.f, 2.f, 1.5f);
+    glm::vec3 CameraPosition = glm::vec3(3.f, 2.f, 2.5f);
     float Radius;
 
 public:

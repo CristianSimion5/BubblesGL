@@ -211,5 +211,75 @@ void Scene::Update() {
         WaitingCircles--;
     }
     SortByDepth();
-    Camera.RotateCamera(glm::normalize(glm::vec3(0.f, 1.f, 0.f)), glm::pi<float>() / 100);
+    auto d = timer::now() - StartIdle;
+    if (d.count() * 1e-9f > 4.f)
+        Camera.RotateCamera(
+            glm::vec3(0.f, 1.f, 0.f), 
+            glm::pi<float>() / 3000);
+    if (MouseDrag) {
+        DragRotate();
+    }
+}
+
+void Scene::DisableMouseDrag() {
+    MouseDrag = false;
+}
+
+void Scene::EnableMouseDrag() {
+    MouseDrag = true;
+}
+
+void Scene::SetMouseP1(int x, int y) {
+    P1 = glm::vec3(HalfWidth - x, HalfHeight - y, 0.f);
+    ResetTimer();
+}
+
+void Scene::SetMouseP2(int x, int y) {
+    P2 = glm::vec3(HalfWidth - x, HalfHeight - y, 0.f);
+    ResetTimer();
+}
+
+void Scene::PrintPoints() {
+    std::cout << P1.x << ' ' << P1.y << '\t' << P2.x << ' ' << P2.y << '\n';
+}
+
+void Scene::SetScreenSize(int width, int height) {
+    HalfWidth = width / 2.f;
+    HalfHeight = height / 2.f;
+    float TrackRadius = glm::min(HalfWidth, HalfHeight);
+    TrackRadiusSq = TrackRadius * TrackRadius;
+}
+
+void Scene::ComputeZ(glm::vec3& P) {
+    float SqX = P.x * P.x, SqY = P.y * P.y;
+    if (SqX + SqY <= TrackRadiusSq) {
+        P.z = glm::sqrt(TrackRadiusSq - SqX - SqY);
+    }
+    else
+        P.z = 0.f;
+}
+
+void Scene::DragRotate() {
+    if (glm::distance(glm::vec2(P1), glm::vec2(P2)) < 0.1f)
+        return;
+
+    ComputeZ(P1);
+    ComputeZ(P2);
+    //std::cout << P1.x << ' ' << P1.y << ' ' << P1.z << '\n';
+    //std::cout << P2.x << ' ' << P2.y << ' ' << P2.z << '\n';
+
+    glm::vec3 P1n = glm::normalize(P1), P2n = glm::normalize(P2);
+    glm::vec3 axis = glm::normalize(glm::cross(P1n, P2n));
+    float angle = glm::acos(glm::dot(P1n, P2n));
+    if (glm::isnan(angle)) {
+        angle = 0;
+    }
+    //std::cout << glm::length(axis);
+    Camera.RotateCamera(glm::inverse(glm::mat3(Camera.ToViewMatrix())) * axis, angle);
+    P1 = P2;
+    //std::cout << axis.x << ' ' << axis.y << ' ' << axis.z << ' ' << angle << '\n';
+}
+
+void Scene::ResetTimer() {
+    StartIdle = timer::now();
 }

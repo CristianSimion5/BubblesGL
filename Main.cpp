@@ -90,6 +90,27 @@ void RenderFunction(void) {
         Sleep((DWORD) (1000.0f/60.0f - d.count() * 1e-6f)); 
 }
 
+void OnMouseClickEvent(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON) {
+        if (state == GLUT_UP)
+            scene.DisableMouseDrag();
+        else {
+            scene.EnableMouseDrag();
+            scene.SetMouseP1(x, y);
+            scene.SetMouseP2(x, y);
+        }
+    }
+
+}
+
+void OnMouseMotionEvent(int x, int y) {
+    scene.SetMouseP2(x, y);
+}
+
+void OnReshapeEvent(int width, int height) {
+    scene.SetScreenSize(width, height);
+}
+
 void Cleanup(void) {
     DestroyShaders();
     // Distruge VBO-urile si VAO-urile folosite la desenarea cercurilor
@@ -110,10 +131,19 @@ int main(int argc, char* argv[]) {
             << Circle::indices[2] << '\n';
     }*/
 
+    scene.SetScreenSize(1000, 1000);
+
     glutDisplayFunc(RenderFunction);
     glutCloseFunc(Cleanup);
+    glutMouseFunc(OnMouseClickEvent);
+    glutMotionFunc(OnMouseMotionEvent);
+    glutReshapeFunc(OnReshapeEvent);
     glutMainLoop();
 
+
+    // https://pixeladventuresweb.wordpress.com/2016/10/04/arcball-controller/
+    // http://asliceofrendering.com/camera/2019/11/30/ArcballCamera/
+    // https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball
     //float constexpr pi = glm::pi<float>();
     //Quaternion quat(glm::normalize(glm::vec3(1.f, 1.f, 0.f)), pi / 2);
     //glm::vec3 a;
