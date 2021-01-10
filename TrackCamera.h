@@ -16,4 +16,3 @@ public:
     void RotateCamera(glm::vec3 Axis, float Angle);
     glm::mat4 ToViewMatrix(glm::vec3 Object = glm::vec3(0.f, 0.f, 0.f)) const;
 };
-

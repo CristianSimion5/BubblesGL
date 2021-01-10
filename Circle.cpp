@@ -23,30 +23,28 @@ void Circle::InitVertex() {
     std::vector<glm::vec2> texCoords;
 
     GLfloat x, y, z;
-    GLfloat paraCos;
+    GLfloat meriCos;
     GLfloat normCoef = 1.f / BaseRadius;
     GLfloat s, t;
 
     GLfloat constexpr PI = glm::pi<float>();
     GLfloat paraStep = 2.f * PI / parallelCount;
-    GLfloat meriStep = 2.f * PI / meridianCount;
+    GLfloat meriStep = PI / meridianCount;
     GLfloat paraAngle, meriAngle;
 
-    int II = 1;
-
-    for (int i = 0; i < parallelCount + II; i++) {
-        // Parametrizare dupa paralele
-        paraAngle = PI / 2 - i * paraStep;
-        paraCos = BaseRadius * glm::cos(paraAngle);
-        z = BaseRadius * glm::sin(paraAngle);
+    for (int i = 0; i < meridianCount + 1; i++) {
+        // Parametrizare dupa meridiane
+        meriAngle = PI / 2 - i * meriStep;
+        meriCos = BaseRadius * glm::cos(meriAngle);
+        z = BaseRadius * glm::sin(meriAngle);
     
-        for (int j = 0; j < meridianCount + II; j++) {
-            // Parametrizare dupa meridiane
-            meriAngle = j * meriStep;
+        for (int j = 0; j < parallelCount + 1; j++) {
+            // Parametrizare dupa paralele
+            paraAngle = j * paraStep;
 
             // Pozitiile varfului
-            x = paraCos * glm::cos(meriAngle);
-            y = paraCos * glm::sin(meriAngle);
+            x = meriCos * glm::cos(paraAngle);
+            y = meriCos * glm::sin(paraAngle);
             glm::vec3 pos = glm::vec3(x, y, z);
             vertices.push_back(pos);
 
@@ -54,25 +52,25 @@ void Circle::InitVertex() {
             normals.push_back(pos * normCoef);
 
             // Valorile coordonatelor de textura
-            s = (float) j / meridianCount;
-            t = (float) i / parallelCount;
+            s = (float) j / parallelCount;
+            t = (float) i / meridianCount;
             texCoords.push_back(glm::vec2(s, t));
         }
     }
 
     GLuint ind1, ind2;
-    for (int i = 0; i < parallelCount; i++) {
-        ind1 = i * (meridianCount + II);
-        ind2 = ind1 + meridianCount + II;
+    for (int i = 0; i < meridianCount; i++) {
+        ind1 = i * (parallelCount + 1);
+        ind2 = ind1 + parallelCount + 1;
 
-        for (int j = 0; j < meridianCount; j++) {
+        for (int j = 0; j < parallelCount; j++) {
             if (i != 0) {
                 indices.push_back(ind1);
                 indices.push_back(ind2);
                 indices.push_back(ind1 + 1);
             }
 
-            if (i != parallelCount - 1) {
+            if (i != meridianCount - 1) {
                 indices.push_back(ind1 + 1);
                 indices.push_back(ind2);
                 indices.push_back(ind2 + 1);

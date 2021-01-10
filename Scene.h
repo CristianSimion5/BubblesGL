@@ -19,9 +19,9 @@ private:
     std::uniform_real_distribution<float> distribution2;
     std::uniform_real_distribution<float> distribution3;
     
-    const glm::vec3 OutlineColor = glm::vec3(0.1f, 0.1f, 0.1f);
-    glm::vec3 LightPosition, LightColor;
-    
+    const glm::vec3 OutlineColor = glm::vec3(0.2f, 0.2f, 0.2f);
+    glm::vec3 LightPosition = glm::vec3(0.f, 1.f, 2.f), 
+              LightColor = glm::vec3(1.f, 1.f, 1.f);
     
     TrackCamera Camera;
     glm::vec3 P1, P2;
@@ -29,8 +29,10 @@ private:
     float HalfWidth, HalfHeight, TrackRadiusSq;
     timer::time_point StartIdle = timer::now();
 
-    GLuint VaoId, VboId, EboId;
-    GLfloat XBounds[2] = { -1.f, 1.f }, YBounds[2] = { -1.f, 1.f }, ZBounds[2] = { -1.f, 1.f };
+    GLuint VaoId[2], VboId[2], EboId, TexId, NormalMapId;
+    GLfloat XBounds[2] = { -1.f, 1.f }, 
+            YBounds[2] = { -1.f, 1.f }, 
+            ZBounds[2] = { -1.f, 1.f };
 
     int WaitingCircles;
     int FrameCount;
@@ -40,6 +42,7 @@ private:
     bool CheckCollision(const Circle &c1, const Circle &c2) const;
     void ResolveCollision(Circle &c1, Circle &c2);
     void SortByDepth();
+    GLuint LoadTexture(const char* path);
 
 public:
     Scene(int NumCircles, bool SameRadius = false);

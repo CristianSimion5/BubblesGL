@@ -148,6 +148,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TrackCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -155,12 +156,17 @@
     <ClInclude Include="loadShaders.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="TrackCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
     <None Include="Shader.frag" />
     <None Include="Shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\marble_normal.jpg" />
+    <Image Include="textures\marble_texture.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

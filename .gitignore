@@ -338,3 +338,16 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/textures/wood_texture.jpg
+/textures/wood_normal.jpg
+/textures/rattan_texture.jpg
+/textures/rattan_normal.jpg
+/textures/pillow_normal.png
+/textures/normal_map.png
+/textures/leather_texture.jpg
+/textures/leather_normal.jpg
+/textures/coin_normal.png
+/textures/cell_normal.png
+/textures/brickwall_normal.jpg
+/textures/brickwall2_normal.png
+/media/View.png
