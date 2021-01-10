@@ -14,11 +14,16 @@ uniform mat4 mModel;
 uniform mat4 mView;
 uniform mat4 mProjection;
 
+uniform bool uIsFloor;
 
 void main(void) {
-   Normal = in_Normal;
-   FragPos = vec3(mModel * in_Position);
+    if (uIsFloor)
+        Normal = mat3(mModel) * vec3(0.f, 1.f, 0.f);
+    else
+        Normal = mat3(mModel) * in_Normal;
+    
+    FragPos = vec3(mModel * in_Position);
 
-   gl_Position = mProjection * mView * mModel * in_Position;
+    gl_Position = mProjection * mView * mModel * in_Position;
 } 
  

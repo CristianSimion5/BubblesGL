@@ -16,9 +16,11 @@ uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform vec3 cameraPos;
 
+uniform bool uIsFloor;
+
 void main(void) {
     // Ambient
-    float ambientStrength = 0.8f;
+    float ambientStrength = 0.9f;
     vec3 ambient = ambientStrength * lightColor;
 
     // Diffuse
@@ -37,6 +39,10 @@ void main(void) {
     vec3 specular = specularStrength * spec * lightColor;  
 
     vec3 result = (ambient + diffuse + specular) * uColor;
-    out_Color = vec4(result, .4f);
+
+    if (uIsFloor)
+        out_Color = vec4(result, 1.f);
+    else
+        out_Color = vec4(result, .4f);
 }
  

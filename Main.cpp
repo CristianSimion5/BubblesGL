@@ -9,6 +9,9 @@
 #include "loadShaders.h"
 #include "Circle.h"
 #include "Scene.h"
+#include "Quaternion.h"
+
+#include <glm/gtc/constants.hpp>
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -69,7 +72,6 @@ void Initialize(void) {
 void RenderFunction(void) {
     // Punctul de timp pentru inceputul desenarii
     timer::time_point t1 = timer::now();
-    glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     scene.RenderScene(ProgramId);
@@ -111,4 +113,10 @@ int main(int argc, char* argv[]) {
     glutDisplayFunc(RenderFunction);
     glutCloseFunc(Cleanup);
     glutMainLoop();
+
+    //float constexpr pi = glm::pi<float>();
+    //Quaternion quat(glm::normalize(glm::vec3(1.f, 1.f, 0.f)), pi / 2);
+    //glm::vec3 a;
+    //a = (glm::vec3) (quat * glm::vec3(0.f, 1.f, 0.f) * quat.Conjugate());
+    //std::cout << quat << '\n' << a.x << ' ' << a.y << ' ' << a.z;
 }

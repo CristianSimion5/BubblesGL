@@ -3,6 +3,10 @@
 #include <random>
 
 #include "Circle.h"
+#include "Quaternion.h"
+#include "TrackCamera.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 class Scene {
 private:
@@ -13,10 +17,11 @@ private:
     std::uniform_real_distribution<float> distribution2;
     std::uniform_real_distribution<float> distribution3;
     
-    const glm::vec3 OutlineColor = glm::vec3(1.f, 0.f, 0.f);
-    glm::vec3 CameraPosition, LightPosition, LightColor;
+    const glm::vec3 OutlineColor = glm::vec3(0.1f, 0.1f, 0.1f);
+    glm::vec3 LightPosition, LightColor;
+    TrackCamera Camera;
 
-    GLuint VaoId, VboId;
+    GLuint VaoId, VboId, EboId;
     GLfloat XBounds[2] = { -1.f, 1.f }, YBounds[2] = { -1.f, 1.f }, ZBounds[2] = { -1.f, 1.f };
 
     int WaitingCircles;
@@ -37,7 +42,7 @@ public:
     void AddCircle(Circle c);
     void AddRandomCircle();
 
-    void RenderScene(GLint ShaderId) const;
+    void RenderScene(GLint ShaderId);
     void CheckCollisions();
     void Update();
 };

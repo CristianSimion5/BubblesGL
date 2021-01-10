@@ -134,8 +134,6 @@ glm::vec3 Circle::GetCoordinates() const { return glm::vec3(MatrPos[3]); }
 glm::vec3 Circle::GetVelocity() const { return Velocity; }
 
 void Circle::RenderCircle(GLuint ShaderId) const {
-    glUseProgram(ShaderId);
-
     glm::mat4 mModel = MatrPos * MatrScale;
     GLint mModelLoc = glGetUniformLocation(ShaderId, "mModel");
     glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);

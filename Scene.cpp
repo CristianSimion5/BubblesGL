@@ -19,8 +19,7 @@ Scene::Scene(int NumCircles, bool SameRadius) {
     WaitingCircles = NumCircles - 1;
     FrameCount = 0;
 
-    CameraPosition = glm::vec3(3.f, 2.3f, 1.5f);
-    LightPosition = glm::vec3(5.f, 5.f, 5.f);
+    LightPosition = glm::vec3(0.f, 1.f, 2.f);
     LightColor = glm::vec3(1.f, 1.f, 1.f);
 }
 
@@ -64,6 +63,11 @@ void Scene::CreateVertexBuffers()
         XBounds[1], YBounds[1], ZBounds[0]
     };
 
+    GLubyte FloorIndices[] = {
+        0, 1, 3,
+        3, 5, 0
+    };
+
     glGenVertexArrays(1, &VaoId);
     glBindVertexArray(VaoId);
 
@@ -73,6 +77,10 @@ void Scene::CreateVertexBuffers()
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+
+    glGenBuffers(1, &EboId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EboId);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(FloorIndices), &FloorIndices[0], GL_STATIC_DRAW);
 }
 
 void Scene::AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
@@ -99,7 +107,7 @@ void Scene::AddRandomCircle() {
     VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));
 }
 
-void Scene::RenderScene(GLint ShaderId) const {
+void Scene::RenderScene(GLint ShaderId) {
     glUseProgram(ShaderId);
     glBindVertexArray(VaoId);
 
@@ -110,16 +118,13 @@ void Scene::RenderScene(GLint ShaderId) const {
     glUniform3fv(lPosLocation, 1, &LightPosition[0]);
 
     GLuint cPosLocation = glGetUniformLocation(ShaderId, "cameraPos");
-    glUniform3fv(cPosLocation, 1, &CameraPosition[0]);
+    glUniform3fv(cPosLocation, 1, &Camera.GetPosition()[0]);
 
     glm::mat4 mModel = glm::mat4(1.f);
     GLint mModelLoc = glGetUniformLocation(ShaderId, "mModel");
     glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);
 
-    glm::mat4 mView = glm::lookAt(
-        CameraPosition,
-        glm::vec3(0.f, 0.f, 0.f),
-        glm::vec3(0.f, 1.f, 0.f));
+    glm::mat4 mView = Camera.ToViewMatrix();
     GLint mViewLoc = glGetUniformLocation(ShaderId, "mView");
     glUniformMatrix4fv(mViewLoc, 1, GL_FALSE, &mView[0][0]);
 
@@ -128,17 +133,26 @@ void Scene::RenderScene(GLint ShaderId) const {
     glUniformMatrix4fv(mProjectionLoc, 1, GL_FALSE, &mProjection[0][0]);
 
     GLint uColorLoc = glGetUniformLocation(ShaderId, "uColor");
-    glUniform3f(uColorLoc, 0.f, 0.f, 0.f);
+    glUniform3fv(uColorLoc, 1, &OutlineColor[0]);
+    
+    GLint uIsFloorLoc = glGetUniformLocation(ShaderId, "uIsFloor");
+
+    glUniform1i(uIsFloorLoc, true);
     
     glLineWidth(2.f);
     glDrawArrays(GL_LINES, 0, 24);
+    glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_BYTE, 0);
+    
+    glUniform1i(uIsFloorLoc, false);
 
     glDepthMask(GL_FALSE);
     glBindVertexArray(Circle::VaoId);
     for (const Circle& circle : VC) {
         circle.RenderCircle(ShaderId);
     }
-    
+    glDepthMask(GL_TRUE);
+
+    glUseProgram(0);
 }
 
 GLfloat Scene::GetDistance(const Circle &c1, const Circle &c2) const {
@@ -163,8 +177,8 @@ void Scene::ResolveCollision(Circle &c1, Circle &c2) {
 
 void Scene::SortByDepth() {
     std::sort(VC.begin(), VC.end(), [this](const Circle& c1, const Circle& c2) {
-        return (glm::distance(c1.GetCoordinates(), CameraPosition) + c1.GetRadius() >
-                glm::distance(c2.GetCoordinates(), CameraPosition) + c2.GetRadius());
+        return (glm::distance(c1.GetCoordinates(), Camera.GetPosition()) + c1.GetRadius() >
+                glm::distance(c2.GetCoordinates(), Camera.GetPosition()) + c2.GetRadius());
         });
 }
 
@@ -197,4 +211,5 @@ void Scene::Update() {
         WaitingCircles--;
     }
     SortByDepth();
+    Camera.RotateCamera(glm::normalize(glm::vec3(0.f, 1.f, 0.f)), glm::pi<float>() / 100);
 }
