@@ -13,6 +13,8 @@
 
 #include <glm/gtc/constants.hpp>
 
+#include <iostream>
+
 void GLAPIENTRY
 MessageCallback(GLenum source,
     GLenum type,
@@ -100,7 +102,13 @@ void OnMouseClickEvent(int button, int state, int x, int y) {
             scene.SetMouseP2(x, y);
         }
     }
-
+    // 3 - Scroll Up, 4 - Scroll Down
+    else if (button == 3) {
+        scene.Scroll(true);
+    }
+    else if (button == 4) {
+        scene.Scroll(false);
+    }
 }
 
 void OnMouseMotionEvent(int x, int y) {
@@ -108,6 +116,7 @@ void OnMouseMotionEvent(int x, int y) {
 }
 
 void OnReshapeEvent(int width, int height) {
+    glViewport(0, 0, width, height);
     scene.SetScreenSize(width, height);
 }
 
@@ -116,7 +125,7 @@ void Cleanup(void) {
     // Distruge VBO-urile si VAO-urile folosite la desenarea cercurilor
     Circle::DestroyVertex();
 }
-#include <iostream>
+
 int main(int argc, char* argv[]) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
@@ -130,8 +139,6 @@ int main(int argc, char* argv[]) {
         std::cout << Circle::indices[i] << ' ' << Circle::indices[i + 1] << ' '
             << Circle::indices[2] << '\n';
     }*/
-
-    scene.SetScreenSize(1000, 1000);
 
     glutDisplayFunc(RenderFunction);
     glutCloseFunc(Cleanup);

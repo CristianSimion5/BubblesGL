@@ -128,7 +128,7 @@ void Scene::RenderScene(GLint ShaderId) {
     GLint mViewLoc = glGetUniformLocation(ShaderId, "mView");
     glUniformMatrix4fv(mViewLoc, 1, GL_FALSE, &mView[0][0]);
 
-    glm::mat4 mProjection = glm::perspective(glm::radians(45.f), 1.f, 1.f, 10.f);
+    glm::mat4 mProjection = glm::perspective(glm::radians(45.f), HalfWidth / HalfHeight, 1.f, 20.f);
     GLint mProjectionLoc = glGetUniformLocation(ShaderId, "mProjection");
     glUniformMatrix4fv(mProjectionLoc, 1, GL_FALSE, &mProjection[0][0]);
 
@@ -230,13 +230,20 @@ void Scene::EnableMouseDrag() {
 }
 
 void Scene::SetMouseP1(int x, int y) {
-    P1 = glm::vec3(HalfWidth - x, HalfHeight - y, 0.f);
+    P1 = glm::vec3(HalfWidth - x, y - HalfHeight, 0.f);
     ResetTimer();
 }
 
 void Scene::SetMouseP2(int x, int y) {
-    P2 = glm::vec3(HalfWidth - x, HalfHeight - y, 0.f);
+    P2 = glm::vec3(HalfWidth - x, y - HalfHeight, 0.f);
     ResetTimer();
+}
+
+void Scene::Scroll(bool up) {
+    if (up)
+        Camera.UpdateRadius(-0.01f);
+    else
+        Camera.UpdateRadius(0.01f);
 }
 
 void Scene::PrintPoints() {

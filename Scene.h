@@ -58,6 +58,7 @@ public:
     void EnableMouseDrag();
     void SetMouseP1(int x, int y);
     void SetMouseP2(int x, int y);
+    void Scroll(bool up);
     void PrintPoints();
     void SetScreenSize(int width, int height);
     void ComputeZ(glm::vec3& P);
