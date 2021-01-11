@@ -351,3 +351,4 @@ healthchecksdb
 /textures/brickwall_normal.jpg
 /textures/brickwall2_normal.png
 /media/View.png
+stb_image.h
