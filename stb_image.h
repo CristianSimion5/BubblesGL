@@ -15,7 +15,6 @@
    You can #define STBI_ASSERT(x) before the #include to avoid using assert.h.
    And #define STBI_MALLOC, STBI_REALLOC, and STBI_FREE to avoid using malloc,realloc,free
 
-
    QUICK NOTES:
       Primarily of interest to game developers and other people who can
           avoid problematic images and only need the trivial interface
@@ -40,7 +39,6 @@
       - SIMD acceleration on x86/x64 (SSE2) and ARM (NEON)
 
    Full documentation under "DOCUMENTATION" below.
-
 
 LICENSE
 
@@ -71,7 +69,6 @@ RECENT REVISION HISTORY:
       2.09  (2016-01-16) 16-bit TGA; comments in PNM files; STBI_REALLOC_SIZED
 
    See end of file for full revision history.
-
 
  ============================    Contributors    =========================
 
@@ -451,7 +448,6 @@ extern "C" {
     STBIDEF int      stbi_is_hdr_from_file(FILE* f);
 #endif // STBI_NO_STDIO
 
-
     // get a VERY brief reason for failure
     // on most compilers (and ALL modern mainstream compilers) this is threadsafe
     STBIDEF const char* stbi_failure_reason(void);
@@ -471,8 +467,6 @@ extern "C" {
     STBIDEF int      stbi_is_16_bit(char const* filename);
     STBIDEF int      stbi_is_16_bit_from_file(FILE* f);
 #endif
-
-
 
     // for image formats that explicitly notate that they have premultiplied alpha,
     // we just return the colors as stored in the file. set this flag to force
@@ -500,7 +494,6 @@ extern "C" {
 
     STBIDEF char* stbi_zlib_decode_noheader_malloc(const char* buffer, int len, int* outlen);
     STBIDEF int   stbi_zlib_decode_noheader_buffer(char* obuffer, int olen, const char* ibuffer, int ilen);
-
 
 #ifdef __cplusplus
 }
@@ -550,7 +543,6 @@ extern "C" {
 #define STBI_NO_ZLIB
 #endif
 
-
 #include <stdarg.h>
 #include <stddef.h> // ptrdiff_t on osx
 #include <stdlib.h>
@@ -575,7 +567,6 @@ extern "C" {
 #else
 #define STBI_EXTERN extern
 #endif
-
 
 #ifndef _MSC_VER
 #ifdef __cplusplus
@@ -782,7 +773,6 @@ typedef struct
     stbi_uc* img_buffer, * img_buffer_end;
     stbi_uc* img_buffer_original, * img_buffer_original_end;
 } stbi__context;
-
 
 static void stbi__refill_buffer(stbi__context* s);
 
@@ -1302,7 +1292,6 @@ static FILE* stbi__fopen(char const* filename, char const* mode)
     return f;
 }
 
-
 STBIDEF stbi_uc* stbi_load(char const* filename, int* x, int* y, int* comp, int req_comp)
 {
     FILE* f = stbi__fopen(filename, "rb");
@@ -1348,7 +1337,6 @@ STBIDEF stbi_us* stbi_load_16(char const* filename, int* x, int* y, int* comp, i
     fclose(f);
     return result;
 }
-
 
 #endif //!STBI_NO_STDIO
 
@@ -1520,7 +1508,6 @@ static float stbi__h2l_gamma_i = 1.0f / 2.2f, stbi__h2l_scale_i = 1.0f;
 
 STBIDEF void   stbi_hdr_to_ldr_gamma(float gamma) { stbi__h2l_gamma_i = 1 / gamma; }
 STBIDEF void   stbi_hdr_to_ldr_scale(float scale) { stbi__h2l_scale_i = 1 / scale; }
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -4543,7 +4530,6 @@ typedef struct
     int depth;
 } stbi__png;
 
-
 enum {
     STBI__F_none = 0,
     STBI__F_sub = 1,
@@ -5278,7 +5264,6 @@ static int stbi__bmp_test(stbi__context* s)
     return r;
 }
 
-
 // returns 0..31 for the highest set bit
 static int stbi__high_bit(unsigned int z)
 {
@@ -5423,7 +5408,6 @@ static void* stbi__bmp_parse_header(stbi__context* s, stbi__bmp_data* info)
     }
     return (void*)1;
 }
-
 
 static void* stbi__bmp_load(stbi__context* s, int* x, int* y, int* comp, int req_comp, stbi__result_info* ri)
 {
@@ -6142,7 +6126,6 @@ static void* stbi__psd_load(stbi__context* s, int* x, int* y, int* comp, int req
                 }
             }
         }
-
     }
     else {
         // We're at the raw image data.  It's each channel in order (Red, Green, Blue, Alpha, ...)
@@ -7826,7 +7809,6 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const* c, void* user
       0.50  (2006-11-19)
               first released version
 */
-
 
 /*
 ------------------------------------------------------------------------------

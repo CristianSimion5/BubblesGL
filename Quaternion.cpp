@@ -1,15 +1,15 @@
 #include "Quaternion.h"
 
-Quaternion::Quaternion(): x(0.f), y(0.f), z(0.f), w(1.f) {}
+Quaternion::Quaternion() : x(0.f), y(0.f), z(0.f), w(1.f) {}
 
-Quaternion::Quaternion(glm::vec3 Point): 
+Quaternion::Quaternion(glm::vec3 Point) :
     x(Point.x), y(Point.y), z(Point.z), w(0.f) {}
 
 Quaternion::Quaternion(glm::vec3 Axis, float Angle) {
     *this = FromAxisAndAngle(Axis, Angle);
 }
 
-Quaternion::Quaternion(float w, float x, float y, float z):
+Quaternion::Quaternion(float w, float x, float y, float z) :
     x(x), y(y), z(z), w(w) {}
 
 float Quaternion::SquareNorm()
@@ -40,7 +40,7 @@ void Quaternion::Rotate(glm::vec3 Axis, float Angle) {
 glm::mat4 Quaternion::ToRotationMatrix() {
     glm::mat4 rot(1.f);
 
-    // Note: matrix is column-wise, so actual matrix is transposed
+    // Nota: matricea este in forma de coloana, deci indexarea se face dupa coloana, apoi dupa rand
     rot[0][0] = 1 - 2 * y * y - 2 * z * z;
     rot[0][1] = 2 * x * y + 2 * w * z;
     rot[0][2] = 2 * x * z - 2 * w * y;
@@ -52,7 +52,7 @@ glm::mat4 Quaternion::ToRotationMatrix() {
     rot[2][0] = 2 * x * z + 2 * w * y;
     rot[2][1] = 2 * y * z - 2 * w * x;
     rot[2][2] = 1 - 2 * x * x - 2 * y * y;
-    
+
     return rot;
 }
 
@@ -65,7 +65,7 @@ Quaternion Quaternion::operator*(const Quaternion& Q) const {
     return Quaternion(new_w, new_x, new_y, new_z);
 }
 
-Quaternion::operator glm::vec3 () const {
+Quaternion::operator glm::vec3() const {
     return glm::vec3(x, y, z);
 }
 

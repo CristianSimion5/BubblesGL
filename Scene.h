@@ -18,11 +18,11 @@ private:
     std::uniform_real_distribution<float> distribution;
     std::uniform_real_distribution<float> distribution2;
     std::uniform_real_distribution<float> distribution3;
-    
-    const glm::vec3 OutlineColor = glm::vec3(0.2f, 0.2f, 0.2f);
-    glm::vec3 LightPosition = glm::vec3(0.f, 1.f, 2.f), 
-              LightColor = glm::vec3(1.f, 1.f, 1.f);
-    
+
+    const glm::vec3 OutlineColor = glm::vec3(0.2f, 0.2f, 0.2f),
+        LightColor = glm::vec3(1.f, 1.f, 1.f),
+        LightPosition = glm::vec3(0.f, 1.f, 2.f);
+
     TrackCamera Camera;
     glm::vec3 P1, P2;
     bool MouseDrag = false;
@@ -30,25 +30,26 @@ private:
     timer::time_point StartIdle = timer::now();
 
     GLuint VaoId[2], VboId[2], EboId, TexId, NormalMapId;
-    GLfloat XBounds[2] = { -1.f, 1.f }, 
-            YBounds[2] = { -1.f, 1.f }, 
-            ZBounds[2] = { -1.f, 1.f };
+    GLfloat XBounds[2] = { -1.f, 1.f },
+        YBounds[2] = { -1.f, 1.f },
+        ZBounds[2] = { -1.f, 1.f };
 
     int WaitingCircles;
     int FrameCount;
 
 private:
-    GLfloat GetDistance(const Circle &c1, const Circle &c2) const;
-    bool CheckCollision(const Circle &c1, const Circle &c2) const;
-    void ResolveCollision(Circle &c1, Circle &c2);
+    GLfloat GetDistance(const Circle& c1, const Circle& c2) const;
+    bool CheckCollision(const Circle& c1, const Circle& c2) const;
+    void ResolveCollision(Circle& c1, Circle& c2);
     void SortByDepth();
     GLuint LoadTexture(const char* path);
 
 public:
     Scene(int NumCircles, bool SameRadius = false);
+    ~Scene();
 
     void CreateVertexBuffers();
-    void AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz, 
+    void AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
         GLfloat r, glm::vec3 c);
     void AddCircle(Circle c);
     void AddRandomCircle();
@@ -62,7 +63,6 @@ public:
     void SetMouseP1(int x, int y);
     void SetMouseP2(int x, int y);
     void Scroll(bool up);
-    void PrintPoints();
     void SetScreenSize(int width, int height);
     void ComputeZ(glm::vec3& P);
     void DragRotate();

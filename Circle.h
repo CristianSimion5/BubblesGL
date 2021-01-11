@@ -28,7 +28,7 @@ private:
     GLfloat Radius;
 
 public:
-    Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz, 
+    Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
         GLfloat r, glm::vec3 Color);
 
     GLfloat GetRadius() const;

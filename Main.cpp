@@ -3,17 +3,10 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include <vector>
 #include <chrono>
 
 #include "loadShaders.h"
-#include "Circle.h"
 #include "Scene.h"
-#include "Quaternion.h"
-
-#include <glm/gtc/constants.hpp>
-
-#include <iostream>
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -48,9 +41,9 @@ void DestroyShaders(void) {
 void Initialize(void) {
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // culoarea de fond a ecranului
 
-    // During init, enable debug output
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(MessageCallback, 0);
+    // Mesaje de debugging
+    // glEnable(GL_DEBUG_OUTPUT);
+    // glDebugMessageCallback(MessageCallback, 0);
 
     CreateShaders();
 
@@ -60,7 +53,7 @@ void Initialize(void) {
 
     // Activeaza testarea in adancime
     glEnable(GL_DEPTH_TEST);
-    
+
     // Activeaza multisample anti-aliasing
     glEnable(GL_MULTISAMPLE);
 
@@ -75,7 +68,7 @@ void RenderFunction(void) {
     // Punctul de timp pentru inceputul desenarii
     timer::time_point t1 = timer::now();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     scene.RenderScene(ProgramId);
     scene.Update();
     glutPostRedisplay();
@@ -86,13 +79,14 @@ void RenderFunction(void) {
     timer::time_point t2 = timer::now();
     auto d = t2 - t1;
 
-    // Pentru a bloca FPS-ul la 60, se suspenda activitatea timp de 
+    // Pentru a bloca FPS-ul la 60, se suspenda activitatea timp de
     // 1000/60 milisecunde - timpul in care s-a desenat cadrul precedent
     if (d.count() * 1e-6f < 1000.0f / 60.0f)
-        Sleep((DWORD) (1000.0f/60.0f - d.count() * 1e-6f)); 
+        Sleep((DWORD)(1000.0f / 60.0f - d.count() * 1e-6f));
 }
 
 void OnMouseClickEvent(int button, int state, int x, int y) {
+    // Verificarea apasarii butoanelor mouse-ului pentru modificarea camerei
     if (button == GLUT_LEFT_BUTTON) {
         if (state == GLUT_UP)
             scene.DisableMouseDrag();
@@ -122,7 +116,7 @@ void OnReshapeEvent(int width, int height) {
 
 void Cleanup(void) {
     DestroyShaders();
-    // Distruge VBO-urile si VAO-urile folosite la desenarea cercurilor
+    // Distruge VBO-urile si VAO-urile folosite la desenarea sferelor
     Circle::DestroyVertex();
 }
 
@@ -135,10 +129,6 @@ int main(int argc, char* argv[]) {
     glewInit();
 
     Initialize();
-    /*for (int i = 0; i < Circle::indices.size(); i += 3) {
-        std::cout << Circle::indices[i] << ' ' << Circle::indices[i + 1] << ' '
-            << Circle::indices[2] << '\n';
-    }*/
 
     glutDisplayFunc(RenderFunction);
     glutCloseFunc(Cleanup);
@@ -146,14 +136,4 @@ int main(int argc, char* argv[]) {
     glutMotionFunc(OnMouseMotionEvent);
     glutReshapeFunc(OnReshapeEvent);
     glutMainLoop();
-
-
-    // https://pixeladventuresweb.wordpress.com/2016/10/04/arcball-controller/
-    // http://asliceofrendering.com/camera/2019/11/30/ArcballCamera/
-    // https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball
-    //float constexpr pi = glm::pi<float>();
-    //Quaternion quat(glm::normalize(glm::vec3(1.f, 1.f, 0.f)), pi / 2);
-    //glm::vec3 a;
-    //a = (glm::vec3) (quat * glm::vec3(0.f, 1.f, 0.f) * quat.Conjugate());
-    //std::cout << quat << '\n' << a.x << ' ' << a.y << ' ' << a.z;
 }

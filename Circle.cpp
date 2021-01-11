@@ -37,7 +37,7 @@ void Circle::InitVertex() {
         meriAngle = PI / 2 - i * meriStep;
         meriCos = BaseRadius * glm::cos(meriAngle);
         z = BaseRadius * glm::sin(meriAngle);
-    
+
         for (int j = 0; j < parallelCount + 1; j++) {
             // Parametrizare dupa paralele
             paraAngle = j * paraStep;
@@ -52,8 +52,8 @@ void Circle::InitVertex() {
             normals.push_back(pos * normCoef);
 
             // Valorile coordonatelor de textura
-            s = (float) j / parallelCount;
-            t = (float) i / meridianCount;
+            s = (float)j / parallelCount;
+            t = (float)i / meridianCount;
             texCoords.push_back(glm::vec2(s, t));
         }
     }
@@ -75,7 +75,7 @@ void Circle::InitVertex() {
                 indices.push_back(ind2);
                 indices.push_back(ind2 + 1);
             }
-            
+
             ind1++;
             ind2++;
         }
@@ -96,7 +96,7 @@ void Circle::InitVertex() {
     glGenBuffers(1, &VboNormId);
     glBindBuffer(GL_ARRAY_BUFFER, VboNormId);
     glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
-    
+
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 
@@ -110,13 +110,15 @@ void Circle::DestroyVertex() {
     glDisableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDeleteBuffers(1, &VboId);
-    
+    glDeleteBuffers(1, &VboNormId);
+    glDeleteBuffers(1, &EboId);
+
     glBindVertexArray(0);
     glDeleteVertexArrays(1, &VaoId);
 }
 
-Circle::Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz, 
-        GLfloat r, glm::vec3 col) {
+Circle::Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
+    GLfloat r, glm::vec3 col) {
     MatrPos = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
     Velocity = glm::vec3(vx, vy, vz);
     MatrScale = glm::scale(glm::mat4(1.0f), glm::vec3(r, r, r));
@@ -132,16 +134,13 @@ glm::vec3 Circle::GetCoordinates() const { return glm::vec3(MatrPos[3]); }
 glm::vec3 Circle::GetVelocity() const { return Velocity; }
 
 void Circle::RenderCircle(GLuint ShaderId) const {
-    glm::mat4 mModel = MatrPos * MatrScale;
     GLint mModelLoc = glGetUniformLocation(ShaderId, "mModel");
-    glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);
-
-    GLint uRadiusLoc = glGetUniformLocation(ShaderId, "radius");
     GLint uColorLoc = glGetUniformLocation(ShaderId, "uColor");
 
-    glUniform1f(uRadiusLoc, Radius);
+    glm::mat4 mModel = MatrPos * MatrScale;
+    glUniformMatrix4fv(mModelLoc, 1, GL_FALSE, &mModel[0][0]);
     glUniform3fv(uColorLoc, 1, &Color[0]);
-       
+
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 

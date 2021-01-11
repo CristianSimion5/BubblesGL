@@ -13,7 +13,6 @@ public:
     Quaternion(glm::vec3 Axis, float Angle);
     Quaternion(float w, float x, float y, float z);
 
-
     float SquareNorm();
     Quaternion Conjugate();
     Quaternion FromAxisAndAngle(glm::vec3 Axis, float Angle);
@@ -21,7 +20,7 @@ public:
     glm::mat4 ToRotationMatrix();
 
     Quaternion operator*(const Quaternion& Q) const;
-    operator glm::vec3 () const;
+    operator glm::vec3() const;
 
     friend std::ostream& operator<<(std::ostream& out, const Quaternion& Q);
 };

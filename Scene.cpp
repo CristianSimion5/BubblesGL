@@ -21,6 +21,15 @@ Scene::Scene(int NumCircles, bool SameRadius) {
     FrameCount = 0;
 }
 
+Scene::~Scene() {
+    // Distruge VBO-urile si VAO-urile
+    glDeleteBuffers(2, VboId);
+    glDeleteBuffers(1, &EboId);
+    glDeleteTextures(1, &TexId);
+    glDeleteTextures(1, &NormalMapId);
+    glDeleteVertexArrays(2, VaoId);
+}
+
 void Scene::CreateVertexBuffers() {
     GLfloat BoxOutline[] = {
         XBounds[0], YBounds[0], ZBounds[0],
@@ -28,7 +37,7 @@ void Scene::CreateVertexBuffers() {
 
         XBounds[0], YBounds[0], ZBounds[1],
         XBounds[1], YBounds[0], ZBounds[1],
-        
+
         XBounds[1], YBounds[0], ZBounds[1],
         XBounds[1], YBounds[0], ZBounds[0],
 
@@ -37,13 +46,13 @@ void Scene::CreateVertexBuffers() {
 
         XBounds[0], YBounds[1], ZBounds[0],
         XBounds[0], YBounds[1], ZBounds[1],
-        
+
         XBounds[0], YBounds[1], ZBounds[1],
         XBounds[1], YBounds[1], ZBounds[1],
-        
+
         XBounds[1], YBounds[1], ZBounds[1],
         XBounds[1], YBounds[1], ZBounds[0],
-        
+
         XBounds[1], YBounds[1], ZBounds[0],
         XBounds[0], YBounds[1], ZBounds[0],
 
@@ -61,7 +70,7 @@ void Scene::CreateVertexBuffers() {
     };
 
     GLfloat FloorVertices[] = {
-        XBounds[0], YBounds[0], ZBounds[0], 0.f, 0.f, 
+        XBounds[0], YBounds[0], ZBounds[0], 0.f, 0.f,
         XBounds[0], YBounds[0], ZBounds[1], 0.f, 1.f,
         XBounds[1], YBounds[0], ZBounds[1], 1.f, 1.f,
         XBounds[1], YBounds[0], ZBounds[0], 1.f, 0.f,
@@ -90,15 +99,15 @@ void Scene::CreateVertexBuffers() {
     // Indicii Podelei
     glGenBuffers(1, &EboId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EboId);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
         sizeof(FloorIndices), &FloorIndices[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
 
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 
-        (void*) (3 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat),
+        (void*)(3 * sizeof(float)));
 
     TexId = LoadTexture("textures/marble_texture.jpg");
     NormalMapId = LoadTexture("textures/marble_normal.jpg");
@@ -138,14 +147,14 @@ void Scene::CreateVertexBuffers() {
 
         glm::vec3 deltaPos1 = v1 - v0;
         glm::vec3 deltaPos2 = v2 - v0;
-    
+
         glm::vec2 deltaUV1 = uv1 - uv0;
         glm::vec2 deltaUV2 = uv2 - uv0;
 
         float invDet = 1.f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
         glm::vec3 tangent = invDet * (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y);
         glm::vec3 bitangent = invDet * (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x);
-    
+
         tangents[i1] = tangent;
         tangents[i2] = tangent;
         tangents[i3] = tangent;
@@ -154,7 +163,7 @@ void Scene::CreateVertexBuffers() {
         bitangents[i2] = bitangent;
         bitangents[i3] = bitangent;
     }
-    
+
     GLuint tgBuffer, btgBuffer;
     glGenBuffers(1, &tgBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, tgBuffer);
@@ -174,7 +183,7 @@ void Scene::CreateVertexBuffers() {
 }
 
 void Scene::AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
-        GLfloat r, glm::vec3 c) {
+    GLfloat r, glm::vec3 c) {
     VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));
 }
 
@@ -192,7 +201,7 @@ void Scene::AddRandomCircle() {
     x = -1.f + r * Circle::BaseRadius;
     y = -1.f + r * Circle::BaseRadius;
     z = -1.f + r * Circle::BaseRadius;
-    
+
     glm::vec3 c(distribution3(generator), distribution3(generator), distribution3(generator));
     VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));
 }
@@ -200,6 +209,7 @@ void Scene::AddRandomCircle() {
 void Scene::RenderScene(GLint ShaderId) {
     glUseProgram(ShaderId);
 
+    // Seteaza unitatile de texturare
     glUniform1i(glGetUniformLocation(ShaderId, "uTexture"), 0);
     glUniform1i(glGetUniformLocation(ShaderId, "uNormalMap"), 1);
 
@@ -213,7 +223,7 @@ void Scene::RenderScene(GLint ShaderId) {
     GLint mProjectionLoc = glGetUniformLocation(ShaderId, "mProjection");
     GLint uColorLoc = glGetUniformLocation(ShaderId, "uColor");
     GLint uIsFloorLoc = glGetUniformLocation(ShaderId, "uIsFloor");
-    
+
     glm::mat4 mModel = glm::mat4(1.f);
     glm::mat4 mView = Camera.ToViewMatrix();
     glm::mat4 mProjection = glm::perspective(
@@ -231,6 +241,7 @@ void Scene::RenderScene(GLint ShaderId) {
     glLineWidth(2.f);
     glDrawArrays(GL_LINES, 0, 24);
 
+    // Seteaza texturile corespunzatoare culorii/normalelor
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, TexId);
     glActiveTexture(GL_TEXTURE1);
@@ -238,10 +249,11 @@ void Scene::RenderScene(GLint ShaderId) {
     glBindVertexArray(VaoId[1]);
 
     glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_BYTE, 0);
-    
+
     glBindTexture(GL_TEXTURE_2D, 0);
     glUniform1i(uIsFloorLoc, false);
 
+    // Opreste masca de adancime pentru a desena corect obiectele transparente
     glDepthMask(GL_FALSE);
     glBindVertexArray(Circle::VaoId);
     for (const Circle& circle : VC) {
@@ -252,30 +264,31 @@ void Scene::RenderScene(GLint ShaderId) {
     glUseProgram(0);
 }
 
-GLfloat Scene::GetDistance(const Circle &c1, const Circle &c2) const {
+GLfloat Scene::GetDistance(const Circle& c1, const Circle& c2) const {
     glm::vec3 diff = c1.GetCoordinates() - c2.GetCoordinates();
     return glm::sqrt(glm::dot(diff, diff));
 }
 
-bool Scene::CheckCollision(const Circle &c1, const Circle &c2) const {
+bool Scene::CheckCollision(const Circle& c1, const Circle& c2) const {
     return GetDistance(c1, c2) < (c1.GetRadius() + c2.GetRadius());
 }
 
-void Scene::ResolveCollision(Circle &c1, Circle &c2) {
+void Scene::ResolveCollision(Circle& c1, Circle& c2) {
     glm::vec3 normal = c1.GetCoordinates() - c2.GetCoordinates();
     glm::vec3 v_normal = c1.GetVelocity() - c2.GetVelocity();
-    
+
     float resistance = 4e-1f;
     glm::vec3 diff = (1 - resistance) * glm::dot(v_normal, normal) / glm::dot(normal, normal) * normal;
-    
+
     c1.ChangeDirection(diff, normal);
     c2.ChangeDirection(-diff, -normal);
 }
 
 void Scene::SortByDepth() {
+    // Sorteaza sferele in ordine back-to-front, pentru desenare corecta atunci cand avem transparenta
     std::sort(VC.begin(), VC.end(), [this](const Circle& c1, const Circle& c2) {
         return (glm::distance(c1.GetCoordinates(), Camera.GetPosition()) + c1.GetRadius() >
-                glm::distance(c2.GetCoordinates(), Camera.GetPosition()) + c2.GetRadius());
+            glm::distance(c2.GetCoordinates(), Camera.GetPosition()) + c2.GetRadius());
         });
 }
 
@@ -284,7 +297,6 @@ GLuint Scene::LoadTexture(const char* path) {
     // Realizat urmand tutorialul https://learnopengl.com/Getting-started/Textures
     GLuint texture;
     glGenTextures(1, &texture);
-    
 
     int width, height, nrChannels;
     GLubyte* data = stbi_load(path, &width, &height, &nrChannels, 0);
@@ -340,7 +352,7 @@ void Scene::Update() {
     auto d = timer::now() - StartIdle;
     if (d.count() * 1e-9f > 4.f)
         Camera.RotateCamera(
-            glm::vec3(0.f, 1.f, 0.f), 
+            glm::vec3(0.f, 1.f, 0.f),
             glm::pi<float>() / 3000);
     if (MouseDrag) {
         DragRotate();
@@ -372,10 +384,6 @@ void Scene::Scroll(bool up) {
         Camera.UpdateRadius(0.01f);
 }
 
-void Scene::PrintPoints() {
-    std::cout << P1.x << ' ' << P1.y << '\t' << P2.x << ' ' << P2.y << '\n';
-}
-
 void Scene::SetScreenSize(int width, int height) {
     HalfWidth = width / 2.f;
     HalfHeight = height / 2.f;
@@ -393,13 +401,15 @@ void Scene::ComputeZ(glm::vec3& P) {
 }
 
 void Scene::DragRotate() {
+    // Functionalitate implementata urmarind urmatoarele tutoriale
+    // https://pixeladventuresweb.wordpress.com/2016/10/04/arcball-controller/
+    // http://asliceofrendering.com/camera/2019/11/30/ArcballCamera/
+    // https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball
     if (glm::distance(glm::vec2(P1), glm::vec2(P2)) < 0.1f)
         return;
 
     ComputeZ(P1);
     ComputeZ(P2);
-    //std::cout << P1.x << ' ' << P1.y << ' ' << P1.z << '\n';
-    //std::cout << P2.x << ' ' << P2.y << ' ' << P2.z << '\n';
 
     glm::vec3 P1n = glm::normalize(P1), P2n = glm::normalize(P2);
     glm::vec3 axis = glm::normalize(glm::cross(P1n, P2n));
@@ -407,10 +417,9 @@ void Scene::DragRotate() {
     if (glm::isnan(angle)) {
         angle = 0;
     }
-    //std::cout << glm::length(axis);
+
     Camera.RotateCamera(glm::inverse(glm::mat3(Camera.ToViewMatrix())) * axis, angle);
     P1 = P2;
-    //std::cout << axis.x << ' ' << axis.y << ' ' << axis.z << ' ' << angle << '\n';
 }
 
 void Scene::ResetTimer() {
