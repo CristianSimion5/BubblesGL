@@ -67,6 +67,8 @@ void Initialize(void) {
 void RenderFunction(void) {
     // Punctul de timp pentru inceputul desenarii
     timer::time_point t1 = timer::now();
+
+    // Trebuie curatat si bitul buffer-ului de adancime
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     scene.RenderScene(ProgramId);
@@ -122,6 +124,9 @@ void Cleanup(void) {
 
 int main(int argc, char* argv[]) {
     glutInit(&argc, argv);
+    // GLUT_DOUBLE - double buffering
+    // GLUT_DEPTH - necesar pentru depth testing
+    // GLUT_MULTISAMPLE - multisampling avem nevoie de
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(1000, 1000);

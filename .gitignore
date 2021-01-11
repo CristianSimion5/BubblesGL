@@ -352,3 +352,8 @@ healthchecksdb
 /textures/brickwall2_normal.png
 /media/View.png
 stb_image.h
+
+*.odt
+*.odt#
+*.pdf
+*.zip
