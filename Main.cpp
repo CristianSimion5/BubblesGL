@@ -48,7 +48,7 @@ void Initialize(void) {
     CreateShaders();
 
     // Creeaza VBO-urile si VAO-urile necesare pentru desenare
-    Circle::InitVertex();
+    Sphere::InitVertex();
     scene.CreateVertexBuffers();
 
     // Activeaza testarea in adancime
@@ -117,7 +117,7 @@ void OnReshapeEvent(int width, int height) {
 void Cleanup(void) {
     DestroyShaders();
     // Distruge VBO-urile si VAO-urile folosite la desenarea sferelor
-    Circle::DestroyVertex();
+    Sphere::DestroyVertex();
 }
 
 int main(int argc, char* argv[]) {

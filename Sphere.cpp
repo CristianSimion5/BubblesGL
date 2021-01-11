@@ -1,24 +1,24 @@
-#include "Circle.h"
+#include "Sphere.h"
 
 #include <GL/freeglut.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 // Initializarea datelor membre statice
-GLuint Circle::VaoId;
-GLuint Circle::VboId;
-GLuint Circle::VboNormId;
-GLuint Circle::EboId;
-std::vector<GLuint> Circle::indices;
+GLuint Sphere::VaoId;
+GLuint Sphere::VboId;
+GLuint Sphere::VboNormId;
+GLuint Sphere::EboId;
+std::vector<GLuint> Sphere::indices;
 
-GLfloat Circle::BaseRadius = 0.3f;
-GLint Circle::parallelCount = 50;
-GLint Circle::meridianCount = 50;
+GLfloat Sphere::BaseRadius = 0.3f;
+GLint Sphere::parallelCount = 50;
+GLint Sphere::meridianCount = 50;
 
-std::random_device Circle::rs;
-std::default_random_engine Circle::generator(rs());
-std::uniform_real_distribution<float> Circle::distribution(-1e-4f, 1e-4f);
+std::random_device Sphere::rs;
+std::default_random_engine Sphere::generator(rs());
+std::uniform_real_distribution<float> Sphere::distribution(-1e-4f, 1e-4f);
 
-void Circle::InitVertex() {
+void Sphere::InitVertex() {
     std::vector<glm::vec3> vertices, normals;
     std::vector<glm::vec2> texCoords;
 
@@ -106,7 +106,7 @@ void Circle::InitVertex() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
 }
 
-void Circle::DestroyVertex() {
+void Sphere::DestroyVertex() {
     glDisableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDeleteBuffers(1, &VboId);
@@ -117,7 +117,7 @@ void Circle::DestroyVertex() {
     glDeleteVertexArrays(1, &VaoId);
 }
 
-Circle::Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
+Sphere::Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
     GLfloat r, glm::vec3 col) {
     MatrPos = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
     Velocity = glm::vec3(vx, vy, vz);
@@ -127,13 +127,13 @@ Circle::Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat 
     Force = glm::vec3(distribution(generator), distribution(generator), distribution(generator));
 }
 
-GLfloat Circle::GetRadius() const { return Radius; }
+GLfloat Sphere::GetRadius() const { return Radius; }
 
-glm::vec3 Circle::GetCoordinates() const { return glm::vec3(MatrPos[3]); }
+glm::vec3 Sphere::GetCoordinates() const { return glm::vec3(MatrPos[3]); }
 
-glm::vec3 Circle::GetVelocity() const { return Velocity; }
+glm::vec3 Sphere::GetVelocity() const { return Velocity; }
 
-void Circle::RenderCircle(GLuint ShaderId) const {
+void Sphere::RenderSphere(GLuint ShaderId) const {
     GLint mModelLoc = glGetUniformLocation(ShaderId, "mModel");
     GLint uColorLoc = glGetUniformLocation(ShaderId, "uColor");
 
@@ -144,7 +144,7 @@ void Circle::RenderCircle(GLuint ShaderId) const {
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void Circle::Update(bool ChangeForce) {
+void Sphere::Update(bool ChangeForce) {
     if (ChangeForce) {
         Force = glm::vec3(distribution(generator), distribution(generator), distribution(generator));
     }
@@ -186,7 +186,7 @@ void Circle::Update(bool ChangeForce) {
     }
 }
 
-void Circle::ChangeDirection(glm::vec3 diff, glm::vec3 normal) {
+void Sphere::ChangeDirection(glm::vec3 diff, glm::vec3 normal) {
     Velocity = Velocity - diff;
     MatrPos[3].x += normal.x * 0.0005f;
     MatrPos[3].y += normal.y * 0.0005f;

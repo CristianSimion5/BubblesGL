@@ -7,7 +7,7 @@
 #include "stb_image.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-Scene::Scene(int NumCircles, bool SameRadius) {
+Scene::Scene(int NumSpheres, bool SameRadius) {
     generator = std::default_random_engine(rs());
     distribution = std::uniform_real_distribution<float>(0.001f, 0.01f);
     if (SameRadius)
@@ -16,8 +16,8 @@ Scene::Scene(int NumCircles, bool SameRadius) {
         distribution2 = std::uniform_real_distribution<float>(0.5f, 1.f);
     distribution3 = std::uniform_real_distribution<float>(0.f, 1.f);
 
-    AddRandomCircle();
-    WaitingCircles = NumCircles - 1;
+    AddRandomSphere();
+    WaitingSpheres = NumSpheres - 1;
     FrameCount = 0;
 }
 
@@ -182,28 +182,28 @@ void Scene::CreateVertexBuffers() {
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 }
 
-void Scene::AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
+void Scene::AddSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
     GLfloat r, glm::vec3 c) {
-    VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));
+    VC.push_back(Sphere(x, y, z, vx, vy, vz, r, c));
 }
 
-void Scene::AddCircle(Circle c) {
+void Scene::AddSphere(Sphere c) {
     VC.push_back(c);
 }
 
-void Scene::AddRandomCircle() {
+void Scene::AddRandomSphere() {
     GLfloat x, y, z, vx, vy, vz, r;
     vx = distribution(generator);
     vy = distribution(generator);
     vz = distribution(generator);
     r = distribution2(generator);
 
-    x = -1.f + r * Circle::BaseRadius;
-    y = -1.f + r * Circle::BaseRadius;
-    z = -1.f + r * Circle::BaseRadius;
+    x = -1.f + r * Sphere::BaseRadius;
+    y = -1.f + r * Sphere::BaseRadius;
+    z = -1.f + r * Sphere::BaseRadius;
 
     glm::vec3 c(distribution3(generator), distribution3(generator), distribution3(generator));
-    VC.push_back(Circle(x, y, z, vx, vy, vz, r, c));
+    VC.push_back(Sphere(x, y, z, vx, vy, vz, r, c));
 }
 
 void Scene::RenderScene(GLint ShaderId) {
@@ -255,25 +255,25 @@ void Scene::RenderScene(GLint ShaderId) {
 
     // Opreste masca de adancime pentru a desena corect obiectele transparente
     glDepthMask(GL_FALSE);
-    glBindVertexArray(Circle::VaoId);
-    for (const Circle& circle : VC) {
-        circle.RenderCircle(ShaderId);
+    glBindVertexArray(Sphere::VaoId);
+    for (const Sphere& Sphere : VC) {
+        Sphere.RenderSphere(ShaderId);
     }
     glDepthMask(GL_TRUE);
 
     glUseProgram(0);
 }
 
-GLfloat Scene::GetDistance(const Circle& c1, const Circle& c2) const {
+GLfloat Scene::GetDistance(const Sphere& c1, const Sphere& c2) const {
     glm::vec3 diff = c1.GetCoordinates() - c2.GetCoordinates();
     return glm::sqrt(glm::dot(diff, diff));
 }
 
-bool Scene::CheckCollision(const Circle& c1, const Circle& c2) const {
+bool Scene::CheckCollision(const Sphere& c1, const Sphere& c2) const {
     return GetDistance(c1, c2) < (c1.GetRadius() + c2.GetRadius());
 }
 
-void Scene::ResolveCollision(Circle& c1, Circle& c2) {
+void Scene::ResolveCollision(Sphere& c1, Sphere& c2) {
     glm::vec3 normal = c1.GetCoordinates() - c2.GetCoordinates();
     glm::vec3 v_normal = c1.GetVelocity() - c2.GetVelocity();
 
@@ -286,7 +286,7 @@ void Scene::ResolveCollision(Circle& c1, Circle& c2) {
 
 void Scene::SortByDepth() {
     // Sorteaza sferele in ordine back-to-front, pentru desenare corecta atunci cand avem transparenta
-    std::sort(VC.begin(), VC.end(), [this](const Circle& c1, const Circle& c2) {
+    std::sort(VC.begin(), VC.end(), [this](const Sphere& c1, const Sphere& c2) {
         return (glm::distance(c1.GetCoordinates(), Camera.GetPosition()) + c1.GetRadius() >
             glm::distance(c2.GetCoordinates(), Camera.GetPosition()) + c2.GetRadius());
         });
@@ -339,14 +339,14 @@ void Scene::CheckCollisions() {
 
 void Scene::Update() {
     bool ChangeForce = (FrameCount % 150) == 0;
-    for (Circle& circle : VC) {
-        circle.Update(ChangeForce);
+    for (Sphere& Sphere : VC) {
+        Sphere.Update(ChangeForce);
     }
     CheckCollisions();
     FrameCount = (FrameCount + 1) % 150;
-    if (WaitingCircles > 0 && FrameCount % 30 == 0) {
-        AddRandomCircle();
-        WaitingCircles--;
+    if (WaitingSpheres > 0 && FrameCount % 30 == 0) {
+        AddRandomSphere();
+        WaitingSpheres--;
     }
     SortByDepth();
     auto d = timer::now() - StartIdle;

@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 
-class Circle {
+class Sphere {
 public:
     static GLuint VaoId, VboId, VboNormId, EboId;
     static GLfloat BaseRadius;
@@ -28,14 +28,14 @@ private:
     GLfloat Radius;
 
 public:
-    Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
+    Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
         GLfloat r, glm::vec3 Color);
 
     GLfloat GetRadius() const;
     glm::vec3 GetCoordinates() const;
     glm::vec3 GetVelocity() const;
 
-    void RenderCircle(GLuint ShaderId) const;
+    void RenderSphere(GLuint ShaderId) const;
     void Update(bool ChangeForce);
     void ChangeDirection(glm::vec3 diff, glm::vec3 normal);
 };

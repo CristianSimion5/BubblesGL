@@ -3,7 +3,7 @@
 #include <random>
 #include <chrono>
 
-#include "Circle.h"
+#include "Sphere.h"
 #include "TrackCamera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,7 +12,7 @@ typedef std::chrono::steady_clock timer;
 
 class Scene {
 private:
-    std::vector <Circle> VC;
+    std::vector <Sphere> VC;
     std::random_device rs;
     std::default_random_engine generator;
     std::uniform_real_distribution<float> distribution;
@@ -34,25 +34,25 @@ private:
         YBounds[2] = { -1.f, 1.f },
         ZBounds[2] = { -1.f, 1.f };
 
-    int WaitingCircles;
+    int WaitingSpheres;
     int FrameCount;
 
 private:
-    GLfloat GetDistance(const Circle& c1, const Circle& c2) const;
-    bool CheckCollision(const Circle& c1, const Circle& c2) const;
-    void ResolveCollision(Circle& c1, Circle& c2);
+    GLfloat GetDistance(const Sphere& c1, const Sphere& c2) const;
+    bool CheckCollision(const Sphere& c1, const Sphere& c2) const;
+    void ResolveCollision(Sphere& c1, Sphere& c2);
     void SortByDepth();
     GLuint LoadTexture(const char* path);
 
 public:
-    Scene(int NumCircles, bool SameRadius = false);
+    Scene(int NumSpheres, bool SameRadius = false);
     ~Scene();
 
     void CreateVertexBuffers();
-    void AddCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
+    void AddSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat vx, GLfloat vy, GLfloat vz,
         GLfloat r, glm::vec3 c);
-    void AddCircle(Circle c);
-    void AddRandomCircle();
+    void AddSphere(Sphere c);
+    void AddRandomSphere();
 
     void RenderScene(GLint ShaderId);
     void CheckCollisions();
